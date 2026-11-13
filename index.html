@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>شيفرة السادس</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1220;color:#edf2f8;font-family:Arial,sans-serif}
+header{padding:20px;background:#14243a;display:flex;justify-content:space-between;align-items:center}
+.logo{background:#20b6a5;padding:12px;border-radius:12px;font-weight:bold}
+h1{font-size:21px;margin:0}
+header small{color:#a9bacd}
+nav{display:flex;overflow:auto;gap:7px;padding:12px;background:#111d2e}
+button{border:0;border-radius:10px;padding:11px;background:#24364e;color:white;font-size:14px;cursor:pointer}
+button.active,.primary{background:#20b6a5;color:#062622}
+main{padding:16px;max-width:750px;margin:auto}
+.panel{background:#142238;border:1px solid #2b405c;padding:17px;border-radius:15px;margin:14px 0}
+h2{font-size:20px}
+h3{font-size:17px}
+p{line-height:1.8;color:#c4d2e1}
+input,textarea{width:100%;padding:13px;margin:7px 0;background:#0c1728;color:white;border:1px solid #354964;border-radius:9px;font-size:15px}
+textarea{min-height:100px}
+.task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #293950}
+.task input{width:auto}
+.done{text-decoration:line-through;color:#8293a9}
+.timer{text-align:center;font-size:65px;color:#64ddc8;font-weight:bold;margin:25px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row button{flex:1}
+.item{padding:12px;background:#1b2c43;border-radius:10px;margin:8px 0}
+.muted{color:#91a4bb;font-size:13px}
+.page{display:none}.page.show{display:block}
+a{color:#6ee0cf}
+footer{text-align:center;color:#8495aa;padding:25px}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>شيفرة السادس</h1><small>منصتك الدراسية للصف السادس العلمي</small></div>
+ <div class="logo">ش</div>
+</header>
+<nav id="nav">
+ <button class="active" onclick="openPage('home',this)">الرئيسية</button>
+ <button onclick="openPage('plan',this)">خطتي</button>
+ <button onclick="openPage('timer',this)">المؤقت</button>
+ <button onclick="openPage('notes',this)">ملاحظاتي</button>
+ <button onclick="openPage('exam',this)">الامتحان</button>
+ <button onclick="openPage('cards',this)">البطاقات</button>
+ <button onclick="openPage('library',this)">المكتبة</button>
+ <button onclick="openPage('youtube',this)">يوتيوب</button>
+</nav>
+<main>
+<section id="home" class="page show">
+ <div class="panel">
+  <h2>أهلاً بك في شيفرة السادس 👋</h2>
+  <p>نظّم دراستك، تابع إنجازك، واستعد للامتحانات الوزارية خطوة بخطوة.</p>
+  <button class="primary" onclick="openPage('plan')">ابدأ الدراسة</button>
+ </div>
+ <div class="panel">
+  <h3>إنجازك الدراسي</h3>
+  <h2 id="progress">0 / 0</h2>
+  <p class="muted">المهام المكتملة</p>
+ </div>
+ <div class="panel">
+  <h3>أدواتك الدراسية</h3>
+  <p>مؤقت الدراسة • الملاحظات • الاختبارات • بطاقات المراجعة</p>
+ </div>
+</section>
+
+<section id="plan" class="page">
+ <div class="panel">
+  <h2>خطتي الدراسية</h2>
+  <input id="taskInput" placeholder="اكتب المهمة الدراسية">
+  <button class="primary" onclick="addTask()">إضافة مهمة</button>
+  <div id="tasks"></div>
+ </div>
+</section>
+
+<section id="timer" class="page">
+ <div class="panel" style="text-align:center">
+  <h2>مؤقت الدراسة</h2>
+  <div class="row">
+   <button onclick="setTimer(25)">تركيز 25 دقيقة</button>
+   <button onclick="setTimer(5)">استراحة 5 دقائق</button>
+  </div>
+  <div class="timer" id="clock">25:00</div>
+  <div class="row">
+   <button class="primary" onclick="startTimer()">ابدأ</button>
+   <button onclick="pauseTimer()">إيقاف</button>
+   <button onclick="resetTimer()">إعادة</button>
+  </div>
+ </div>
+</section>
+
+<section id="notes" class="page">
+ <div class="panel">
+  <h2>ملاحظاتي</h2>
+  <textarea id="noteInput" placeholder="اكتب ملاحظتك الدراسية هنا"></textarea>
+  <button class="primary" onclick="addNote()">حفظ الملاحظة</button>
+  <div id="notesList"></div>
+ </div>
+</section>
+
+<section id="exam" class="page">
+ <div class="panel">
+  <h2>اختبار تجريبي</h2>
+  <p>ما ناتج مشتقة الدالة x² ؟</p>
+  <div id="answers">
+   <button onclick="checkAnswer('x')">x</button>
+   <button onclick="checkAnswer('2x')">2x</button>
+   <button onclick="checkAnswer('x2')">x²</button>
+   <button onclick="checkAnswer('2')">2</button>
+  </div>
+  <h3 id="examResult"></h3>
+  <button onclick="document.getElementById('examResult').textContent='';">إعادة المحاولة</button>
+ </div>
+</section>
+
+<section id="cards" class="page">
+ <div class="panel">
+  <h2>بطاقات المراجعة</h2>
+  <input id="question" placeholder="السؤال">
+  <input id="answer" placeholder="الإجابة">
+  <button class="primary" onclick="addCard()">إضافة بطاقة</button>
+  <div id="cardsList"></div>
+ </div>
+</section>
+
+<section id="library" class="page">
+ <div class="panel">
+  <h2>المكتبة الدراسية</h2>
+  <p>اختر ملف PDF أو ملزمة من جهازك لفتحها.</p>
+  <input type="file" id="pdfFile" accept=".pdf">
+  <div id="fileResult"></div>
+  <p class="muted">الملفات المختارة تُفتح على جهازك ولا تُرفع إلى خادم.</p>
+ </div>
+</section>
+
+<section id="youtube" class="page">
+ <div class="panel">
+  <h2>البحث عن المحاضرات</h2>
+  <input id="ytSearch" placeholder="اسم المادة أو المحاضرة">
+  <button class="primary" onclick="searchYoutube()">ابحث في يوتيوب</button>
+ </div>
+</section>
+</main>
+<footer>SHIFRA • شيفرة السادس</footer>
+
+<script>
+const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+let tasks=get('sh_tasks',[]),notes=get('sh_notes',[]),cards=get('sh_cards',[]);
+function save(){localStorage.setItem('sh_tasks',JSON.stringify(tasks));localStorage.setItem('sh_notes',JSON.stringify(notes));localStorage.setItem('sh_cards',JSON.stringify(cards));}
+function openPage(id,btn){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));
+ document.getElementById(id).classList.add('show');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ if(btn)btn.classList.add('active');
+}
+function renderTasks(){
+ document.getElementById('tasks').innerHTML=tasks.map((t,i)=>`<div class="task"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})"><span class="${t.done?'done':''}">${escapeText(t.text)}</span><button onclick="deleteTask(${i})">حذف</button></div>`).join('');
+ document.getElementById('progress').textContent=tasks.filter(t=>t.done).length+' / '+tasks.length;
+}
+function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function addTask(){let x=document.getElementById('taskInput');if(!x.value.trim())return;tasks.push({text:x.value.trim(),done:false});x.value='';save();renderTasks();}
+function toggleTask(i){tasks[i].done=!tasks[i].done;save();renderTasks();}
+function deleteTask(i){tasks.splice(i,1);save();renderTasks();}
+function renderNotes(){document.getElementById('notesList').innerHTML=notes.map((n,i)=>`<div class="item">${escapeText(n)}<button onclick="deleteNote(${i})">حذف</button></div>`).join('');}
+function addNote(){let x=document.getElementById('noteInput');if(!x.value.trim())return;notes.unshift(x.value.trim());x.value='';save();renderNotes();}
+function deleteNote(i){notes.splice(i,1);save();renderNotes();}
+function checkAnswer(x){document.getElementById('examResult').textContent=x==='2x'?'إجابة صحيحة، أحسنت!':'حاول مرة أخرى. الإجابة الصحيحة هي 2x';}
+function renderCards(){document.getElementById('cardsList').innerHTML=cards.map((c,i)=>`<div class="item"><b>${escapeText(c.q)}</b><p>${escapeText(c.a)}</p><button onclick="deleteCard(${i})">حذف</button></div>`).join('');}
+function addCard(){let q=document.getElementById('question'),a=document.getElementById('answer');if(!q.value.trim()||!a.value.trim())return;cards.unshift({q:q.value.trim(),a:a.value.trim()});q.value='';a.value='';save();renderCards();}
+function deleteCard(i){cards.splice(i,1);save();renderCards();}
+let remaining=1500,interval=null;
+function showClock(){document.getElementById('clock').textContent=String(Math.floor(remaining/60)).padStart(2,'0')+':'+String(remaining%60).padStart(2,'0');}
+function setTimer(m){pauseTimer();remaining=m*60;showClock();}
+function startTimer(){if(interval)return;interval=setInterval(()=>{if(remaining>0){remaining--;showClock()}else{pauseTimer();alert('انتهت الجلسة! أحسنت.')}},1000);}
+function pauseTimer(){clearInterval(interval);interval=null;}
+function resetTimer(){pauseTimer();remaining=1500;showClock();}
+function searchYoutube(){let q=document.getElementById('ytSearch').value.trim();if(q)window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank');}
+document.getElementById('pdfFile').addEventListener('change',e=>{let f=e.target.files[0];if(f){let u=URL.createObjectURL(f);document.getElementById('fileResult').innerHTML='<p>'+escapeText(f.name)+'</p><a target="_blank" href="'+u+'">فتح الملف</a>'; }});
+renderTasks();renderNotes();renderCards();showClock();
+</script>
+</body>
+</html>
